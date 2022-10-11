@@ -1,45 +1,44 @@
 name: Github test
-
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-  permissions: 
-    contents: read
-  steps:
-    - name: Checkout this repo
-      uses: actions/checkout@v3
-    - name: Checkout matrix-locust
-      uses: actions/checkout@v3
-      with:
-        repo: https://gitlab.futo.org/cvwright/matrix-locust.git
-    - name: Setup python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.x"
-    - name: Install dependencies
-      run: pip install locust locust-plugins
-    - name: Setup a synapse
-      uses: michaelkaye/setup-matrix-synapse@v1
-      with:
-        httpPort: 8008
-        customConfig: |
-    - name: Give synapse a chance to settle
-      run: sleep 60
-    - name: create users
-      run: python3 ./matrix-locust/generate_users.py
-    - name: create rooms
-      run: python3 ./matrix-locust/generate_rooms.py
-    - name: load test 1
-      run: locust -f ./matrix-locust/locust-register-users.py --headless --users 500 --spawn-rate 1 --run-time 5m --host http://localhost:8008/
-    - name: load test 2
-      run: locust -f ./matrix-locust/locust-create-rooms.py --headless --users 500 --spawn-rate 1 --run-time 5m --host http://localhost:8008/
-    - name: load test 3
-      run: locust -f ./matrix-locust/locust-accept-invites.py --headless --users 500 --spawn-rate 2 --run-time 5m --host http://localhost:8008/
-    - name: load test 4
-      run: locust -f ./matrix-locust/locust-run-users.py --headless --users 500 --spawn-rate 5 --run-time 2m --host http://localhost:8008/
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v3
+      - name: Checkout matrix-locust
+        uses: actions/checkout@v3
+        with:
+          repo: https://gitlab.futo.org/cvwright/matrix-locust.git
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+      - name: Install dependencies
+        run: pip install locust locust-plugins
+      - name: Setup a synapse
+        uses: michaelkaye/setup-matrix-synapse@v1
+        with:
+          httpPort: 8008
+          customConfig: |
+      - name: Give synapse a chance to settle
+        run: sleep 60
+      - name: create users
+        run: python3 ./matrix-locust/generate_users.py
+      - name: create rooms
+        run: python3 ./matrix-locust/generate_rooms.py
+      - name: load test 1
+        run: locust -f ./matrix-locust/locust-register-users.py --headless --users 500 --spawn-rate 1 --run-time 5m --host http://localhost:8008/
+      - name: load test 2
+        run: locust -f ./matrix-locust/locust-create-rooms.py --headless --users 500 --spawn-rate 1 --run-time 5m --host http://localhost:8008/
+      - name: load test 3
+        run: locust -f ./matrix-locust/locust-accept-invites.py --headless --users 500 --spawn-rate 2 --run-time 5m --host http://localhost:8008/
+      - name: load test 4
+        run: locust -f ./matrix-locust/locust-run-users.py --headless --users 500 --spawn-rate 5 --run-time 2m --host http://localhost:8008/
